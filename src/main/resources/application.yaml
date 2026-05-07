@@ -1,3 +1,37 @@
+server:
+  port: 8081
+
 spring:
   application:
-    name: vault
+    name: vault-service
+
+    # 1. Elasticsearch Configuration
+    elasticsearch:
+      uris: http://localhost:9200
+      # if you have security enabled, uncomment the lines below:
+      # username: elastic
+      # password: your_password
+
+    # 2. Kafka Consumer Configuration
+    Kafka:
+      bootstrap-servers: localhost:9092
+      consumer:
+        group-id: vault-group
+        # 'earliest' ensures that if the service is down, it reads all missed upon restart
+        auto-offset-rest: earliest
+        # Key is a simple String
+        Key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        # Value is our json AuditLog Object
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          # CRITICAL: THis tells kafka it's safe to convert JSON into your Java class
+          spring.json.trusted.packages: "com.example.vault.model"
+          # Optional: Handles specific type headers if Producers and Consumer use different packages
+          spring.json.value.default.type: "com.example.vault.model.AuditLog"
+
+#3. Logging for Debugging
+logging:
+  level:
+    root: INFO
+    com.example.vault: DEBUG
+    org.springframework.data.elasticsearch: DEBUG

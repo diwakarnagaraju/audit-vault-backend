@@ -39,7 +39,7 @@ public class AuditLogService {
     /*
     search logs by user/Service ID.
      */
-    public List<AuditLog> getLogByActor(String actorId){
+    public List<AuditLog> getLogsByActor(String actorId){
         return auditRepository.findByActorId(actorId);
     }
 }
